@@ -1,151 +1,138 @@
 # DDoS Deflate
-Fork of DDoS Deflate http://deflate.medialayer.com/ with
-fixes, improvements and new features.
+Форк скрипта DDoS Deflate http://deflate.medialayer.com/ с фиксами и улучшением  функционала
+**Автор:** Zaf <zaf@vsnl.com> (Copyright (C) 2005)
 
-**Original Author:** Zaf <zaf@vsnl.com> (Copyright (C) 2005)
+**Поддержка:** Maxim Levchenko <kagbe.leviy@gmail.com>
 
-**Maintainer:** Jefferson González <jgmdev@gmail.com>
+## О скрипте
 
-**Contributor (BSD support):** Marc S. Brooks <devel@mbrooks.info>
-
-## About
-
-(D)DoS Deflate is a lightweight bash shell script designed to assist in
-the process of blocking a denial of service attack. It utilizes the
-command below to create a list of IP addresses connected to the server,
-along with their total number of connections. It is one of the simplest
-and easiest to install solutions at the software level.
-
-netstat -an | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -n
-
-IP addresses with over a pre-configured number of connections are
-automatically blocked in the server's firewall, which can be direct 
-ipfw, iptables, or Advanced Policy Firewall (APF). (We highly recommend that
-you use APF on your server in general, but deflate will work without it.)
-
-### Notable Features
-
-* It is possible to whitelist IP addresses, via /etc/ddos/ignore.ip.list.
-* It is possible to whitelist hostnames, via /etc/ddos/ignore.host.list.
-* Simple configuration file: /etc/ddos/ddos.conf
-* IP addresses are automatically unblocked after a preconfigured time limit (default: 600 seconds)
-* The script can run as a cron job at chosen frequency via the configuration file (default: 1 minute)
-* The script can run as a daemon at chosen frequency via the configuration file (default: 5 seconds)
-* You can receive email alerts when IP addresses are blocked.
-* Control blocking by connection state (see man netstat).
-* Auto-detection of firewall.
-* Support for APF, CSF, ipfw, and iptables.
-* Logs events to /var/log/ddos.log
-* Uses tcpkill to reduce the amount of processes opened by attackers.
-
-## Installation
-
-As root user execute the following commands:
+(D) DoS Deflate - это легкий сценарий оболочки bash, предназначенный для помощи в блокировании атаки на отказ в обслуживании. Он использует приведенную ниже команду для создания списка IP-адресов, подключенных к серверу, вместе с их общим количеством подключений. Это один из самых простых и простых в установке решений на уровне программного обеспечения.
 
 ```shell
-wget https://github.com/jgmdev/ddos-deflate/archive/master.zip
-unzip master.zip
-cd ddos-deflate-master
+netstat -an | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -n
+```
+
+IP-адреса с предварительно настроенным количеством подключений автоматически блокируются в брандмауэре сервера, который может быть прямым ipfw, iptables или брандмауэром расширенной политики (APF). (Мы настоятельно рекомендуем использовать APF на вашем сервере в целом, но спуск будет работать без него.)
+
+### Функции
+
+* Можно переадресовывать IP-адреса, используя /etc/ddos/ignore.ip.list.
+* Можно указывать имена хостов whitelist через /etc/ddos/ignore.host.list.
+* Простой файл конфигурации: /etc/ddos/ddos.conf
+* IP-адреса автоматически разблокируются после предварительно настроенного срока (по умолчанию: 600 секунд)
+* Скрипт может работать как задание cron на выбранной частоте через файл конфигурации (по умолчанию: 1 минута)
+* Скрипт может работать как демон на выбранной частоте через файл конфигурации (по умолчанию: 5 секунд)
+* Вы можете получать оповещения по электронной почте, когда IP-адреса заблокированы.
+* Блокировка управления по состоянию соединения (см. Man netstat).
+* Автоматическое обнаружение брандмауэра.
+* Поддержка APF, CSF, ipfw и iptables.
+* Записывает события в /var/log/ddos.log
+* Использует tcpkill, чтобы уменьшить количество процессов, открытых злоумышленниками.
+
+## Установка
+
+От имени пользователя root выполняем следующие команды:
+
+```shell
+git clone https://github.com/WoozyMasta/ddos-deflate.git
+cd ddos-deflate
 ./install.sh
 ```
 
-## Uninstallation
+Зависимости:
 
-As root user execute the following commands:
+```
+nslookup netstat ifconfig tcpkill timeout awk sed grep
+```
+
+Могут ыть установлены автоматически
+
+## Удаление
+
+От имени пользователя root выполняем следующие команды:
 
 ```shell
-cd ddos-deflate-master
+cd ddos-deflate
 ./uninstall.sh
 ```
 
-## Usage
+## Применение
 
-The installer will automatically detect if your system supports
-init.d scripts, systemd services or cron jobs. If one of them is found
-it will install apropiate files and start the ddos script. In the
-case of init.d and systemd the ddos script is started as a daemon,
-which monitoring interval is set at 5 seconds by default. The daemon
-is much faster detecting attacks than the cron job since cron's are
-capped at 1 minute intervals.
+Установщик автоматически обнаружит, поддерживает ли ваша система скрипты init.d, системные службы или задания cron. Если один из них найден, он установит файлы apropiate и запустит скрипт ddos. В случае init.d и systemd скрипт ddos запускается как демон, интервал мониторинга которого устанавливается по умолчанию в 5 секунд. Демон гораздо быстрее обнаруживает атаки, чем задание cron, поскольку cron's ограничены интервалом в 1 минуту.
 
-Once you hava (D)Dos deflate installed proceed to modify the config
-files to fit your needs.
+После того, как вы установили hava (D) Dos deflate, измените конфигурационные файлы в соответствии с вашими потребностями.
 
 **/etc/ddos/ignore.host.list**
 
-On this file you can add a list of host names to be whitelisted, for
-example:
+В этом файле вы можете добавить список имен хостов для белого списка, пример:
 
 > googlebot.com <br />
 > my-dynamic-ip.somehost.com
 
 **/etc/ddos/ignore.ip.list**
 
-On this file you can add a list of ip addresses to be whitelisted, for
-example:
+В этом файле вы можете добавить список адресов для белого списка, пример:
 
 > 12.43.63.13 <br />
 > 129.134.131.2
 
 **/etc/ddos/ddos.conf**
 
-The behaviour of the ddos script is modified by this configuration file.
-For more details see **man ddos** which has documentation of the
-different configuration options.
+Этот сценарий изменяет поведение сценария ddos. 
+Подробнее см. ** man ddos **, который имеет документацию по различным параметрам конфигурации.
 
-After you modify the config files you will need to restart the daemon.
-If running on systemd:
-
+После изменения конфигурационных файлов вам необходимо перезапустить демон.
+Если работаете на systemd:
 > systemctl restart ddos
 
-If running as classical init.d script:
+Если используеться класический init.d скрипт:
 
 > /etc/init.d/ddos restart <br />
-> or <br />
+> или <br />
 > service ddos restart
 
-When running the script as a cronjob no restarting is required.
+При запуске скрипта в качестве cronjob перезапуск не требуется.
 
-## CLI Usage
+## Использование CLI  
 
 **ddos** [OPTIONS] [N]
 
-*N : number of tcp/udp  connections (default 150)*
+*N : количество подключений tcp / udp (по умолчанию 150)*
 
-#### OPTIONS
+#### ОПЦИИ
 
 **-h | --help:**
 
-   Show the help screen.
+    Показать экран справки.
 
-**-c | --cron:**
+** - c | --cron: **
 
-   Create cron job to run the script regularly (default 1 mins).
+    Создайте задание cron для регулярного запуска скрипта (по умолчанию 1 минута).
 
 **-i | --ignore-list:**
 
-   List whitelisted ip addresses.
+    Список белых адресов ip.
 
 **-b | --bans-list:**
 
-   List currently banned ip addresses.
+    Список в настоящее время запретил IP-адреса.
 
 **-d | --start:**
 
-   Initialize a daemon to monitor connections.
+    Инициализация демона для мониторинга соединений.
 
-**-s | --stop:**
+** - s | --stop:**
 
-   Stop the daemon.
+    Остановите демона.
 
-**-t | --status:**
+** - t | --status:**
 
-   Show status of daemon and pid if currently running.
+    Показывать статус демона и pid, если он запущен.
 
-**-v | --view:**
+** - v | --view:**
 
-   Display active connections to the server.
+    Отображение активных подключений к серверу.
 
-**-k | --kill:**
+** - k | --kill:**
 
-   Block all ip addresses making more than N connections.
+    Заблокируйте все IP-адреса, сделав более N соединений.
