@@ -1,5 +1,6 @@
 # DDoS Deflate
 Форк скрипта DDoS Deflate http://deflate.medialayer.com/ с фиксами и улучшением  функционала
+
 **Автор:** Zaf <zaf@vsnl.com> (Copyright (C) 2005)
 
 **Поддержка:** Maxim Levchenko <kagbe.leviy@gmail.com>
